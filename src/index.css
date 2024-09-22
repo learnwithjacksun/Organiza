@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Sora:wght@100..800&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+:root{
+  --primary: #ff9100;
+  /* --secondary: #ebebeb; */
+  --secondary: #f9f9f9;
+  --light: #fefefe;
+  --lighter: #f9f9f9;
+  --main: #555;
+  --sub:#999;
+  --line:#eee;
+  --shade: transparent;
+}
+
+.dark{
+  --primary: #ff9100;
+  --secondary: #08090a;
+  --light: #19191c;
+  --lighter: #212124;
+  --main: #fefefe;
+  --sub:#9a9a9d;
+  --line:#38383a;
+  --shade:#0e0f10;
+}
+
+*{
+  @apply outline-none font-sans text-main cursor-default
+}
+
+body{
+  @apply bg-light duration-500
+}
+
+.flex-center{
+  @apply flex justify-center items-center
+}
+
+.main {
+  @apply max-w-[90%] 2xl:max-w-[1280px] mx-auto;
+}
+
+.layout {
+  @apply max-w-full md:max-w-[700px] mx-auto;
+}
+
+.btn{
+  @apply font-bold text-sm flex-center gap-2 active:brightness-90 duration-200 font-sora;
+}
+
+.btn-primary{
+  @apply bg-primary text-white btn;
+}
+
+i, span{
+  @apply text-inherit
+}
+
+.line{
+  @apply relative before:absolute before:bottom-0 before:h-[1px] before:w-1/2 before:bg-line before:left-1/2 before:-translate-x-1/2
+}
+
+.nav-links{
+  position: relative;
+  transition: 200ms;
+  transform-origin: left;
+}
+.nav-links::before{
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--primary);
+  transform-origin: left;
+  scale: 0;
+  border-radius: 2em;
+  transition: 200ms;
+}
+
+.nav-links:hover::before{
+  scale: 1;
+}
+
+.hero{
+  min-height: calc(100dvh - 200px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
