@@ -9,6 +9,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./Contexts/AuthProvider";
+import ProtectedRoutes from "./Layouts/ProtectedRoutes";
 
 const App = () => {
   const location = useLocation();
@@ -21,8 +22,13 @@ const App = () => {
             <Route index element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/organizations" element={<Organizations />} />
-            <Route path="/organizations/:id/projects" element={<Projects />} />
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/organizations" element={<Organizations />} />
+              <Route
+                path="/organizations/:id/projects"
+                element={<Projects />}
+              />
+            </Route>
           </Routes>
         </AnimatePresence>
       </AuthProvider>
