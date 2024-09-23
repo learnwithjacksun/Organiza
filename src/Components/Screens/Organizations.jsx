@@ -17,12 +17,21 @@ import UseOrganization from "../../Hooks/UseOrganization";
 
 const Organizations = () => {
   const { data, user } = useAuth();
-  const { createOrganization, organizations, deleteOrganization, joinOrganization } =
-    UseOrganization();
+  const [selectedOrg, setSelectedOrg] = useState(null);
+  const handleOrganizationClick = (org) => {
+    setSelectedOrg(org);
+    setModal(true);
+  };
+  const {
+
+    createOrganization,
+    organizations,
+    deleteOrganization,
+    members
+  } = UseOrganization();
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState(null);
   const [passkey, setPasskey] = useState("");
   const [form, setForm] = useState({
     title: "",
@@ -76,28 +85,18 @@ const Organizations = () => {
     }
   };
 
-  const handleOrganizationClick = (org) => {
-    setSelectedOrg(org);
-    setModal(true);
-  };
+ 
 
-  const handleJoin = async () => {
+  const handleOpen = async () => {
     if (selectedOrg.type === "private" && selectedOrg.passKey !== passkey) {
-        toast.error("Incorrect passkey!");
+      toast.error("Incorrect passkey!");
     } else {
-        try {
-            await joinOrganization(selectedOrg.$id);
-            toast.success("Welcome!");
-            setModal(false);
-            navigate(`/organizations/${selectedOrg.organizationId}/projects`, {
-                state: { organization: selectedOrg },
-            });
-        } catch (error) {
-            toast.error(error.message);
-        }
+      setModal(false);
+      navigate(`/organizations/${selectedOrg.organizationId}/projects`, {
+        state: { organization: selectedOrg },
+      });
     }
-};
-
+  };
 
   const filteredOrganizations = organizations?.filter((org) =>
     org.title.toLowerCase().includes(search.toLowerCase())
@@ -137,18 +136,21 @@ const Organizations = () => {
 
             <Grid>
               {filteredOrganizations?.map((item) => {
-                const { $id, organizationId, title, type, members, creatorId } =
-                  item;
+                const { $id, organizationId, title, type, creatorId } = item;
 
                 return (
                   <div
                     key={organizationId}
                     className="bg-lighter relative hover:border-primary duration-200 pt-8 px-8 pb-6 rounded-2xl border border-line cursor-pointer"
-                    
                   >
                     {creatorId === user?.$id && (
-                      <div onClick={()=> handleDelete($id)} className="absolute z-10 top-4 right-4">
-                        <Icon styles="text-[1.3em] cursor-pointer text-sub">delete</Icon>
+                      <div
+                        onClick={() => handleDelete($id)}
+                        className="absolute z-10 top-4 right-4"
+                      >
+                        <Icon styles="text-[1.3em] cursor-pointer text-sub">
+                          delete
+                        </Icon>
                       </div>
                     )}
                     <div className="min-h-[150px] flex flex-col gap-10 justify-between">
@@ -156,16 +158,17 @@ const Organizations = () => {
                         <h3 className="text-[1.2em] capitalize font-light font-sora">
                           {title}
                         </h3>
-                        
                       </div>
                       <div>
-                          <h2 className="text-4xl font-sora font-bold">
-                            {members.length}
-                          </h2>
-                        <p className="text-sub">{members.length > 1 ? "members":"member"}</p>
-                        </div>
+                        <h2 className="text-4xl font-sora font-bold">
+                          {members.length}
+                        </h2>
+                        <p className="text-sub">
+                          {members.length > 1 ? "members" : "member"}
+                        </p>
+                      </div>
                       <div className="flex items-center justify-between">
-                      <div>
+                        <div>
                           {type === "private" ? (
                             <div className="bg-light text-sm font-medium px-4 border border-line rounded-full py-1 shadow-lg">
                               Private &nbsp;
@@ -179,7 +182,10 @@ const Organizations = () => {
                           )}
                         </div>
 
-                        <button onClick={() => handleOrganizationClick(item)} className="flex items-center cursor-pointer h-11 px-4 bg-light rounded-lg gap-2 border border-line">
+                        <button
+                          onClick={() => handleOrganizationClick(item)}
+                          className="flex items-center cursor-pointer h-11 px-4 bg-light rounded-lg gap-2 border border-line"
+                        >
                           <span>View</span>
                           <Icon styles={"text-[1.3em]"}>open_in_new</Icon>
                         </button>
@@ -212,21 +218,21 @@ const Organizations = () => {
                   />
                   <button
                     className="btn-primary h-10 w-1/2 rounded-lg"
-                    onClick={handleJoin}
+                    onClick={handleOpen}
                   >
-                    Verify & Join
+                    Verify
                   </button>
                 </>
               ) : (
                 <>
                   <p className="text-sub">
-                    Are you sure you want to join this public organization?
+                    Are you sure you want to view this public organization?
                   </p>
                   <button
                     className="btn-primary h-10 w-1/2 rounded-lg"
-                    onClick={handleJoin}
+                    onClick={handleOpen}
                   >
-                    Join
+                    Proceed
                   </button>
                 </>
               )}

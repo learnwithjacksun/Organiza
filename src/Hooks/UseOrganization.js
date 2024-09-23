@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 const UseOrganization = (organizationId) => {
     const { user, data } = useAuth()
     const [projects, setProjects] = useState([])
+    const [members, setMember] = useState([])
     const [organizations, setOrganizations] = useState(null)
 
     const createOrganization = async (title, type, passkey, description) => {
@@ -22,7 +23,6 @@ const UseOrganization = (organizationId) => {
                     organizationId: ID.unique(),
                     creatorId: user?.$id,
                     creatorName: data?.name,
-                    members: [data?.name]
                 }
             )
             fetchOrganizations()
@@ -64,29 +64,59 @@ const UseOrganization = (organizationId) => {
         fetchOrganizations()
     }, [])
 
-    const joinOrganization = async (id) => {
+    const addMembers = async (name) => {
         try {
-            const orgDoc = await databases.getDocument("organizadb", "organizations", id);
-            
-            const isMember = orgDoc.members.includes(data?.name);
-            if (isMember) {
-                console.log("User already exists in the organization");
-            }
-    
-            const updatedMembers = [...orgDoc.members, data?.name];
-            await databases.updateDocument("organizadb", "organizations", id, {
-                members: updatedMembers,
-            });
-    
-            console.log("User joined the organization successfully");
-            fetchOrganizations();
-    
+            await databases.createDocument(
+                "organizadb",
+                "members",
+                ID.unique(),
+                {
+                    memberId: organizationId,
+                    name
+                }
+            )
+            fetchMembers()
         } catch (error) {
-            console.error("Join Organization:", error.message);
-            throw new Error(error.message);
+            console.log("Add members:", error);
+            throw new Error(error.message)
         }
-    };
-    
+    }
+
+    const fetchMembers = useCallback(async () => {
+        try {
+            const res = await databases.listDocuments(
+                "organizadb",
+                "members"
+            )
+            const organizationMembers = res.documents.filter(member => member.memberId === organizationId)
+            setMember(organizationMembers)
+            console.log(organizationMembers);
+        } catch (error) {
+            console.log("Fetch members:", error);
+            throw new Error(error.message)
+        }
+    },[organizationId])
+
+    useEffect(() => {
+        fetchMembers()
+    },[fetchMembers])
+
+    // const joinOrganization = async (id, name) => {
+    //     try {
+    //         await databases.updateDocument(
+    //             "organizadb",
+    //             "organizations",
+    //             id,
+    //             {
+    //                 members: [...organizations.members, name]
+    //             }
+    //         )
+    //     } catch (error) {
+    //         console.log("Fetch Projects:", error);
+    //         throw new Error(error.message)
+    //     }
+    // };
+
 
 
 
@@ -171,7 +201,7 @@ const UseOrganization = (organizationId) => {
         }
     }
 
-    return { createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, joinOrganization }
+    return { createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, addMembers, members}
 }
 
 export default UseOrganization

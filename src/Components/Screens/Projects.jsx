@@ -10,16 +10,27 @@ import Input from "../UI/Input";
 import NoData from "../UI/NoData";
 import toast from "react-hot-toast";
 import UseOrganization from "../../Hooks/UseOrganization";
+import useAuth from "../../Hooks/useAuth";
 
 const Projects = () => {
   const location = useLocation();
   const { organization } = location.state || "";
-  const { title, description, members, organizationId } = organization;
+  const { title, description, organizationId } = organization;
   const [showMembers, setShowMembers] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [projectName, setProjectName] = useState("");
+  const { data } = useAuth();
+  const {
+    projects,
+    createProjects,
+    deleteProject,
+    startProject,
+    finishProject,
+    addMembers,
+    members,
+  } = UseOrganization(organizationId);
 
-  const { projects, createProjects, deleteProject, startProject, finishProject } = UseOrganization(organizationId);
+  const isMember = members.includes(data?.name);
 
   const handleForm = (e) => {
     e.preventDefault();
@@ -45,21 +56,29 @@ const Projects = () => {
       success: "Project Deleted!",
       error: (err) => `${err}`,
     });
-  }
+  };
   const inProgress = (id) => {
     toast.promise(startProject(id), {
       loading: "Starting Project...",
       success: "Project In Progress!",
       error: (err) => `${err}`,
     });
-  }
+  };
   const completed = (id) => {
     toast.promise(finishProject(id), {
       loading: "Completing Project...",
       success: "Project Completed!",
       error: (err) => `${err}`,
     });
-  }
+  };
+
+  const handleJoin = () => {
+    toast.promise(addMembers(data?.name), {
+      loading: "Joining...",
+      success: "Successful!",
+      error: (err) => `${err}`,
+    });
+  };
   return (
     <>
       <RootLayout>
@@ -71,7 +90,7 @@ const Projects = () => {
               onClick={() => setShowMembers((prev) => !prev)}
               className="inline-flex text-sm font-medium items-center gap-2 border-b border-primary"
             >
-              <span>See members</span>
+              <span>Join Organization</span>
               <Icon styles={"text-[1.3em]"}>group</Icon>
             </div>
           </div>
@@ -94,7 +113,7 @@ const Projects = () => {
               )}
               <ul className="flex flex-col gap-4">
                 {projects.map((project) => {
-                  const {$id, projectId, title, status, $createdAt } = project;
+                  const { $id, projectId, title, status, $updatedAt } = project;
 
                   return (
                     <>
@@ -109,23 +128,26 @@ const Projects = () => {
                               {status === "in progress" && "Started at"}{" "}
                               {status === "completed" && "Done at"}{" "}
                               {status === "pending" && "Created at"}:{" "}
-                              {new Date($createdAt).toLocaleString()}
+                              {new Date($updatedAt).toLocaleString()}
                             </p>
                           </div>
 
-                          <div onClick={()=> handleDelete($id)}>
-                            <Icon styles={"text-[1.3em]"}>delete</Icon>
-                          </div>
+                          {/* display button if user is a member of the organization */}
+                          {!isMember && (
+                            <div onClick={() => handleDelete($id)}>
+                              <Icon styles={"text-[1.3em]"}>delete</Icon>
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center justify-between">
                           <p className="text-sm">
                             <span
-                              className={`bg-orange-500/10 capitalize text-orange-500 px-3 rounded-full font-bold border border-orange-500 ${
-                                status === "completed" &&
-                                "border-green-500 text-green-500 bg-green-500/10"
-                              } ${
-                                status === "in progress" &&
-                                "text-blue-500 border-blue-500 bg-blue-500/10"
+                              className={`capitalize px-3 rounded-full font-bold border ${
+                                status === "completed"
+                                  ? "border-green-500 text-green-500 bg-green-500/10"
+                                  : status === "in progress"
+                                  ? "border-blue-500 text-blue-500 bg-blue-500/10"
+                                  : "border-orange-500 text-orange-500 bg-orange-500/10"
                               }`}
                             >
                               {status}
@@ -133,7 +155,7 @@ const Projects = () => {
                           </p>
                           {status === "in progress" ? (
                             <button
-                              onClick={()=>completed($id)}
+                              onClick={() => completed($id)}
                               className={`${
                                 status === "completed"
                                   ? "hidden"
@@ -143,8 +165,8 @@ const Projects = () => {
                               Task Completed?
                             </button>
                           ) : (
-                              <button
-                                onClick={()=> inProgress($id)}
+                            <button
+                              onClick={() => inProgress($id)}
                               className={`${
                                 status === "completed"
                                   ? "hidden"
@@ -173,15 +195,24 @@ const Projects = () => {
           >
             <div className="my-4">
               <ul className="flex flex-col gap-2">
-                {members.map((member, idx) => (
+                {members.map((member) => (
                   <li
-                    key={idx}
+                    key={member.memberId}
                     className="font-sora bg-lighter py-3 px-6 border-b border-line"
                   >
-                    {member}
+                    {member.name}
                   </li>
                 ))}
               </ul>
+              {isMember && (
+                <button
+                  onClick={() => handleJoin(organizationId)}
+                  className="btn-primary px-4 h-10 rounded-lg mt-4"
+                >
+                  <span>Become Member</span>
+                  <Icon styles={"text-[1.3em]"}>add</Icon>
+                </button>
+              )}
             </div>
           </Modal>
         )}
