@@ -11,7 +11,7 @@ const AuthLayout = ({ children, title, subtitle }) => {
           <header>
             <nav className="layout h-[60px] md:h-[80px] flex items-center justify-between">
               <Link
-                to={-1}
+                to="/"
                 className="h-10 w-10 rounded-lg flex-center bg-lighter border-line border"
               >
                 <Icon>arrow_back</Icon>

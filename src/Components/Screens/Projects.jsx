@@ -4,13 +4,13 @@ import RootLayout from "../../Layouts/RootLayout";
 import Heading from "../UI/Heading";
 import Icon from "../UI/Icon";
 import Modal from "../UI/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Input from "../UI/Input";
 import NoData from "../UI/NoData";
 import toast from "react-hot-toast";
-import UseOrganization from "../../Hooks/UseOrganization";
 import useAuth from "../../Hooks/useAuth";
+import useOrganization from "../../Hooks/UseOrganization";
 
 const Projects = () => {
   const location = useLocation();
@@ -20,6 +20,8 @@ const Projects = () => {
   const [showForm, setShowForm] = useState(false);
   const [projectName, setProjectName] = useState("");
   const { data } = useAuth();
+  const [isMember, setIsMember] = useState(false)
+  const [copy, setCopy] = useState(false)
   const {
     projects,
     createProjects,
@@ -28,9 +30,42 @@ const Projects = () => {
     finishProject,
     addMembers,
     members,
-  } = UseOrganization(organizationId);
+  } = useOrganization(organizationId);
 
-  const isMember = members.includes(data?.name);
+  const copyPassKey = () => {
+    if (organization?.passKey) {
+      navigator.clipboard.writeText(organization.passKey)
+        .then(() => {
+          toast.success("Passkey copied to clipboard!");
+          setCopy(true)
+          setTimeout(() => {
+            setCopy(false)
+          }, 2000)
+        })
+        .catch((err) => {
+          toast.error(`Failed to copy passkey: ${err}`);
+        })
+    } else {
+      toast.error("No passkey available to copy!");
+    }
+  };
+  
+  useEffect(() => {
+    const checkMembership = () => {
+      const memberExists = members?.some(member => member.name === data?.name);
+      
+      if (memberExists) {
+        setIsMember(true);
+      } else {
+        setIsMember(false);
+      }
+    };
+    
+    checkMembership();
+  
+  }, [data?.name, members]);
+  
+  console.log(members?.length);
 
   const handleForm = (e) => {
     e.preventDefault();
@@ -79,27 +114,47 @@ const Projects = () => {
       error: (err) => `${err}`,
     });
   };
+
+  const openForm = () => {
+    if (isMember) {
+      setShowForm(true)
+    }
+    else {
+      toast.error("You have to become a memeber first!")
+    }
+  }
+
+  
   return (
     <>
       <RootLayout>
         <PageTransition>
-          <div>
-            <Heading>{title}</Heading>
-            <p className="text-sub">{description}</p>
-            <div
-              onClick={() => setShowMembers((prev) => !prev)}
-              className="inline-flex text-sm font-medium items-center gap-2 border-b border-primary"
-            >
-              <span>Join Organization</span>
-              <Icon styles={"text-[1.3em]"}>group</Icon>
+          <div className="flex flex-col gap-4">
+            <div>
+              <Heading>{title}</Heading>
+              <p className="text-sub text-display">{description}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setShowMembers((prev) => !prev)}
+                className="btn max-w-[200px] py-2 px-4 rounded-lg bg-lighter inline-flex text-sm font-medium items-center gap-2 border border-line"
+              >
+                <span>Become member</span>
+                <Icon styles={"text-[1.3em]"}>person_add</Icon>
+              </button>
+              {organization.type === "private" &&
+                (<button onClick={copyPassKey} className="text-sm flex items-center gap-1">
+                <span>{copy? "copied":"Copy Passkey"}</span>
+                <Icon styles={"text-[1.3em]"}>{copy? "check":"content_copy"}</Icon>
+              </button>)}
             </div>
           </div>
 
           <div className="my-6">
             <div className="line py-4 flex items-center justify-between">
-              <h2 className="font-medium font-sora">Projects</h2>
+              <h2 className="font-medium font-sora">Projects: { projects?.length}</h2>
               <button
-                onClick={() => setShowForm((prev) => !prev)}
+                onClick={openForm}
                 className="btn-primary h-9 px-4 rounded-lg border-b-4 border-[rgba(0,0,0,0.09)]"
               >
                 {/* <Icon>add</Icon> */}
@@ -119,7 +174,7 @@ const Projects = () => {
                     <>
                       <li
                         key={projectId}
-                        className="flex border border-line flex-col gap-2 p-2 px-4 rounded-xl bg-lighter"
+                        className="flex flex-col gap-2 p-2 px-4 bg-lighter border-b border-line rounded pb-4"
                       >
                         <div className="flex items-center justify-between">
                           <div>
@@ -133,7 +188,7 @@ const Projects = () => {
                           </div>
 
                           {/* display button if user is a member of the organization */}
-                          {!isMember && (
+                          {isMember && (
                             <div onClick={() => handleDelete($id)}>
                               <Icon styles={"text-[1.3em]"}>delete</Icon>
                             </div>
@@ -159,10 +214,13 @@ const Projects = () => {
                               className={`${
                                 status === "completed"
                                   ? "hidden"
-                                  : "btn bg-light py-2 px-4 border border-line rounded-xl shadow-lg"
+                                  : "font-semibold flex items-center gap-1 text-sm bg-light py-2 px-4 border border-line rounded-xl"
                               }`}
                             >
-                              Task Completed?
+                              <span>Task Completed?</span>
+                              <Icon styles="text-[1.3em] font-medium text-green-600">
+                                check_circle
+                              </Icon>
                             </button>
                           ) : (
                             <button
@@ -170,10 +228,13 @@ const Projects = () => {
                               className={`${
                                 status === "completed"
                                   ? "hidden"
-                                  : "btn bg-light py-2 px-4 border border-line rounded-xl shadow-lg"
+                                  : "font-semibold flex items-center text-sm gap-1 bg-light py-2 px-4 border border-line rounded-xl"
                               }`}
                             >
-                              Start Task
+                              <span>Start Task</span>
+                              <Icon styles="text-[1.3em] font-medium text-orange-600">
+                                check
+                              </Icon>
                             </button>
                           )}
                         </div>
@@ -190,10 +251,13 @@ const Projects = () => {
       <AnimatePresence>
         {showMembers && (
           <Modal
-            title="Members"
+            title={`Members: ${members?.length}`}
             toggleModal={() => setShowMembers((prev) => !prev)}
           >
             <div className="my-4">
+              {members?.length === 0 && (
+                <p>No members yet!</p>
+              )}
               <ul className="flex flex-col gap-2">
                 {members.map((member) => (
                   <li
@@ -204,7 +268,7 @@ const Projects = () => {
                   </li>
                 ))}
               </ul>
-              {isMember && (
+              {!isMember && (
                 <button
                   onClick={() => handleJoin(organizationId)}
                   className="btn-primary px-4 h-10 rounded-lg mt-4"

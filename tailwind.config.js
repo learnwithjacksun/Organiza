@@ -14,6 +14,8 @@ export default {
         line: "var(--line)",
         light: "var(--light)",
         lighter: "var(--lighter)",
+        invert: "var(--invert)",
+        invert_text: "var(--invert-text)",
        
       },
       fontFamily: {

@@ -32,6 +32,10 @@ const Header = () => {
     )
   }
 
+  const uploadImage = () => {
+    toast.error("Function not available yet!")
+  }
+
   
   return (
     <>
@@ -45,7 +49,7 @@ const Header = () => {
         <div className="flex items-center md:gap-6 gap-4">
           <div
             onClick={toggleDarkMode}
-            className="h-10 w-10 flex-center bg-lighter rounded-full text-sub"
+            className="h-10 w-10 flex-center rounded-full text-sub"
           >
             <Icon styles={"text-[1.3em]"}>
               {darkMode ? "light_mode" : "dark_mode"}
@@ -123,7 +127,7 @@ const Header = () => {
                     </div>
                   </ImageInput>
                   <div className="flex justify-end">
-                    <button className="btn-primary mt-2 px-4 h-10 rounded-lg">
+                    <button onClick={uploadImage} className="btn-primary mt-2 px-4 h-10 rounded-lg">
                       Update
                     </button>
                   </div>

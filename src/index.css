@@ -17,6 +17,8 @@
   --sub:#999;
   --line:#eee;
   --shade: transparent;
+  --invert: #333;
+  --invert-text: #fefefe;
 }
 
 .dark{
@@ -28,6 +30,8 @@
   --sub:#9a9a9d;
   --line:#38383a;
   --shade:#0e0f10;
+  --invert: #fefefe;
+  --invert-text: #555;
 }
 
 *{
@@ -64,6 +68,10 @@ i, span{
 
 .line{
   @apply relative before:absolute before:bottom-0 before:h-[1px] before:w-1/2 before:bg-line before:left-1/2 before:-translate-x-1/2
+}
+
+.text-display{
+  white-space: prewrap;
 }
 
 .nav-links{

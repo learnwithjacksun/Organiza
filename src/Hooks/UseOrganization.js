@@ -3,7 +3,7 @@ import { databases } from "../Libs/appwrite";
 import useAuth from "./useAuth";
 import { useCallback, useEffect, useState } from "react";
 
-const UseOrganization = (organizationId) => {
+const useOrganization = (organizationId) => {
     const { user, data } = useAuth()
     const [projects, setProjects] = useState([])
     const [members, setMember] = useState([])
@@ -204,4 +204,4 @@ const UseOrganization = (organizationId) => {
     return { createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, addMembers, members}
 }
 
-export default UseOrganization
+export default useOrganization

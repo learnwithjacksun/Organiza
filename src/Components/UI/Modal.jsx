@@ -43,7 +43,7 @@ const Modal = ({ title, toggleModal, children }) => {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="w-[90%] md:w-[480px] mx-auto bg-light border border-line mt-20 p-4 rounded-2xl shadow-lg"
+          className="w-[90%] md:w-[480px] mx-auto z-20 bg-light border border-line mt-20 p-4 rounded-2xl shadow-lg"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-[1.2em] font-semibold font-sora">{title}</h3>

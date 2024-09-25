@@ -13,7 +13,10 @@ import TextArea from "../UI/TextArea";
 import Select from "../UI/Select";
 import toast from "react-hot-toast";
 import useAuth from "../../Hooks/useAuth";
-import UseOrganization from "../../Hooks/UseOrganization";
+import useOrganization from "../../Hooks/UseOrganization";
+import NoData from "../UI/NoData";
+import Footer from "../UI/Footer";
+
 
 const Organizations = () => {
   const { data, user } = useAuth();
@@ -22,13 +25,8 @@ const Organizations = () => {
     setSelectedOrg(org);
     setModal(true);
   };
-  const {
-
-    createOrganization,
-    organizations,
-    deleteOrganization,
-    members
-  } = UseOrganization();
+  const { createOrganization, organizations, deleteOrganization } =
+    useOrganization();
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -39,6 +37,7 @@ const Organizations = () => {
     passkey: "",
     description: "",
   });
+
 
   const navigate = useNavigate();
 
@@ -85,8 +84,6 @@ const Organizations = () => {
     }
   };
 
- 
-
   const handleOpen = async () => {
     if (selectedOrg.type === "private" && selectedOrg.passKey !== passkey) {
       toast.error("Incorrect passkey!");
@@ -119,7 +116,7 @@ const Organizations = () => {
     <>
       <PageTransition>
         <RootLayout>
-          <Heading>Hey, {data?.name} 👋</Heading>
+          <Heading>Hi, {data?.name} 👋</Heading>
           <Search search={search} setSearch={setSearch} />
 
           <div className="my-6">
@@ -134,6 +131,10 @@ const Organizations = () => {
               </button>
             </div>
 
+           
+            {filteredOrganizations?.length === 0 && (
+                <NoData message="" />
+              )}
             <Grid>
               {filteredOrganizations?.map((item) => {
                 const { $id, organizationId, title, type, creatorId } = item;
@@ -141,12 +142,12 @@ const Organizations = () => {
                 return (
                   <div
                     key={organizationId}
-                    className="bg-lighter relative hover:border-primary duration-200 pt-8 px-8 pb-6 rounded-2xl border border-line cursor-pointer"
+                    className="bg-lighter relative hover:border-primary duration-200 p-6 rounded-2xl border border-line cursor-pointer"
                   >
                     {creatorId === user?.$id && (
                       <div
                         onClick={() => handleDelete($id)}
-                        className="absolute z-10 top-4 right-4"
+                        className="absolute z-10 top-3 right-3"
                       >
                         <Icon styles="text-[1.3em] cursor-pointer text-sub">
                           delete
@@ -155,19 +156,20 @@ const Organizations = () => {
                     )}
                     <div className="min-h-[150px] flex flex-col gap-10 justify-between">
                       <div>
-                        <h3 className="text-[1.2em] capitalize font-light font-sora">
+                        <h3 className="text-[1.2em] text-wrap flex-1 capitalize font-light font-sora">
                           {title}
                         </h3>
+                        
                       </div>
-                      <div>
-                        <h2 className="text-4xl font-sora font-bold">
-                          {members.length}
-                        </h2>
-                        <p className="text-sub">
-                          {members.length > 1 ? "members" : "member"}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between">
+
+                      <div className="flex items-center flex-row-reverse gap-4 justify-between">
+                        <button
+                          onClick={() => handleOrganizationClick(item)}
+                          className="flex items-center cursor-pointer h-11 px-4 bg-light rounded-lg gap-2 border border-line"
+                        >
+                          <span>View</span>
+                          <Icon styles={"text-[1.3em]"}>open_in_new</Icon>
+                        </button>
                         <div>
                           {type === "private" ? (
                             <div className="bg-light text-sm font-medium px-4 border border-line rounded-full py-1 shadow-lg">
@@ -181,14 +183,6 @@ const Organizations = () => {
                             </div>
                           )}
                         </div>
-
-                        <button
-                          onClick={() => handleOrganizationClick(item)}
-                          className="flex items-center cursor-pointer h-11 px-4 bg-light rounded-lg gap-2 border border-line"
-                        >
-                          <span>View</span>
-                          <Icon styles={"text-[1.3em]"}>open_in_new</Icon>
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -196,6 +190,7 @@ const Organizations = () => {
               })}
             </Grid>
           </div>
+          <Footer/>
         </RootLayout>
       </PageTransition>
 
