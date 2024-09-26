@@ -134,11 +134,15 @@ const Header = () => {
                 </div>
               )}
 
-              <div className="border-t border-line pt-4">
+              <div className="border-t border-line pt-4 flex items-center justify-between gap-4">
                 <button onClick={handleLogout} className="btn text-white bg-red-600 rounded-full h-11 px-6">
                   <span>Logout</span>
                   <Icon styles={"text-[1.3em]"}>logout</Icon>
                 </button>
+                <Link to="/admin" className="btn h-11 px-6 bg-lighter rounded-full">
+                <span>Admin</span>
+                <Icon styles={"text-[1.3em]"}>encrypted</Icon>
+                </Link>
               </div>
             </div>
           </Modal>

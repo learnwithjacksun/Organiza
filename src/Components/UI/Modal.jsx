@@ -30,7 +30,7 @@ const Modal = ({ title, toggleModal, children }) => {
   };
   return (
     <>
-      <div className="fixed inset-0 z-10">
+      <div className="fixed inset-0 z-20">
               <motion.div
                   initial={bgVars.initial}
                   animate={bgVars.animate}

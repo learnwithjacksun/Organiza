@@ -10,6 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./Contexts/AuthProvider";
 import ProtectedRoutes from "./Layouts/ProtectedRoutes";
+import { Admin } from "./Components/Screens/Admin";
 
 const App = () => {
   const location = useLocation();
@@ -28,6 +29,7 @@ const App = () => {
                 path="/organizations/:id/projects"
                 element={<Projects />}
               />
+            <Route path="/admin" element={<Admin/>}/>
             </Route>
           </Routes>
         </AnimatePresence>
