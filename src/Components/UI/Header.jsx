@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 
 const Header = () => {
-  const {logout, data} = useAuth()
+  const {logout, user} = useAuth()
   const { darkMode, toggleDarkMode } = useTheme();
   const [imageView, setImageView] = useState(false);
   const [modal, setModal] = useState(false);
@@ -63,7 +63,7 @@ const Header = () => {
           >
             <div className="h-10 w-10 rounded-full overflow-hidden flex-center text-white">
               <img
-                src={`https://api.dicebear.com/9.x/initials/svg?seed=${data?.name}`}
+                src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`}
                 alt="Avatar"
               />
             </div>
@@ -81,13 +81,13 @@ const Header = () => {
               <div className="flex items-center gap-4">
                 <div className="h-[100px] w-[100px] rounded-full overflow-hidden">
                   <img
-                    src={`https://api.dicebear.com/9.x/initials/svg?seed=${data?.name}`}
+                    src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`}
                     alt="Avatar"
                   />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold">{data?.name}</h2>
-                  <p className="text-sm mb-2 text-gray-500">{data?.email}</p>
+                  <h2 className="text-lg font-bold">{user?.name}</h2>
+                  <p className="text-sm mb-2 text-gray-500">{user?.email}</p>
                   <span
                     onClick={() => setImageView((prev) => !prev)}
                     className="flex items-center py-2 px-4 text-sm font-bold bg-lighter justify-center gap-2 rounded-full"

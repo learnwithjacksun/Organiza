@@ -17,9 +17,8 @@ import useOrganization from "../../Hooks/UseOrganization";
 import NoData from "../UI/NoData";
 import Footer from "../UI/Footer";
 
-
 const Organizations = () => {
-  const { data, user } = useAuth();
+  const { user } = useAuth();
   const [selectedOrg, setSelectedOrg] = useState(null);
   const handleOrganizationClick = (org) => {
     setSelectedOrg(org);
@@ -37,7 +36,6 @@ const Organizations = () => {
     passkey: "",
     description: "",
   });
-
 
   const navigate = useNavigate();
 
@@ -116,7 +114,7 @@ const Organizations = () => {
     <>
       <PageTransition>
         <RootLayout>
-          <Heading>Hi, {data?.name} 👋</Heading>
+          <Heading>Hi, {user?.name} 👋</Heading>
           <Search search={search} setSearch={setSearch} />
 
           <div className="my-6">
@@ -131,10 +129,7 @@ const Organizations = () => {
               </button>
             </div>
 
-           
-            {filteredOrganizations?.length === 0 && (
-                <NoData message="" />
-              )}
+            {filteredOrganizations?.length === 0 && <NoData message="" />}
             <Grid>
               {filteredOrganizations?.map((item) => {
                 const { $id, organizationId, title, type, creatorId } = item;
@@ -159,7 +154,6 @@ const Organizations = () => {
                         <h3 className="text-[1.2em] text-wrap flex-1 capitalize font-light font-sora">
                           {title}
                         </h3>
-                        
                       </div>
 
                       <div className="flex items-center flex-row-reverse gap-4 justify-between">
@@ -190,7 +184,7 @@ const Organizations = () => {
               })}
             </Grid>
           </div>
-          <Footer/>
+          <Footer />
         </RootLayout>
       </PageTransition>
 

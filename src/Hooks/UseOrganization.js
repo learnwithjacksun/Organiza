@@ -4,7 +4,7 @@ import useAuth from "./useAuth";
 import { useCallback, useEffect, useState } from "react";
 
 const useOrganization = (organizationId) => {
-    const { user, data } = useAuth()
+    const { user } = useAuth()
     const [projects, setProjects] = useState([])
     const [members, setMember] = useState([])
     const [organizations, setOrganizations] = useState(null)
@@ -22,7 +22,7 @@ const useOrganization = (organizationId) => {
                     description,
                     organizationId: ID.unique(),
                     creatorId: user?.$id,
-                    creatorName: data?.name,
+                    creatorName: user?.name,
                 }
             )
             fetchOrganizations()
@@ -95,27 +95,11 @@ const useOrganization = (organizationId) => {
             console.log("Fetch members:", error);
             throw new Error(error.message)
         }
-    },[organizationId])
+    }, [organizationId])
 
     useEffect(() => {
         fetchMembers()
-    },[fetchMembers])
-
-    // const joinOrganization = async (id, name) => {
-    //     try {
-    //         await databases.updateDocument(
-    //             "organizadb",
-    //             "organizations",
-    //             id,
-    //             {
-    //                 members: [...organizations.members, name]
-    //             }
-    //         )
-    //     } catch (error) {
-    //         console.log("Fetch Projects:", error);
-    //         throw new Error(error.message)
-    //     }
-    // };
+    }, [fetchMembers])
 
 
 
@@ -201,7 +185,7 @@ const useOrganization = (organizationId) => {
         }
     }
 
-    return { createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, addMembers, members}
+    return { createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, addMembers, members }
 }
 
 export default useOrganization
