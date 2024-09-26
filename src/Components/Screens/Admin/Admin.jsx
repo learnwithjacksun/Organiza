@@ -75,7 +75,7 @@ const Admin = () => {
               onClick={() => setActiveTab("users")}
             >
               <span>Users</span>
-              <Icon>group</Icon>
+              <Icon styles="text-[1.3em]">group</Icon>
             </button>
             <button
               className={`flex-1 rounded-full px-6 ${
@@ -84,7 +84,7 @@ const Admin = () => {
               onClick={() => setActiveTab("organizations")}
             >
               <span>Organizations</span>
-              <Icon>team_dashboard</Icon>
+              <Icon styles="text-[1.3em]">team_dashboard</Icon>
             </button>
           </div>
 
