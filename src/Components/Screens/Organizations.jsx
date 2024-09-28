@@ -83,15 +83,30 @@ const Organizations = () => {
   };
 
   const handleOpen = async () => {
-    if (selectedOrg.type === "private" && selectedOrg.passKey !== passkey) {
-      toast.error("Incorrect passkey!");
-    } else {
+    if (selectedOrg.creatorId === user?.$id) {
+      setModal(false);
+      navigate(`/organizations/${selectedOrg.organizationId}/projects`, {
+        state: { organization: selectedOrg },
+      });
+    } 
+    else if (selectedOrg.type === "private") {
+      if (selectedOrg.passKey === passkey) {
+        setModal(false);
+        navigate(`/organizations/${selectedOrg.organizationId}/projects`, {
+          state: { organization: selectedOrg },
+        });
+      } else {
+        toast.error("Incorrect passkey!");
+      }
+    } 
+    else {
       setModal(false);
       navigate(`/organizations/${selectedOrg.organizationId}/projects`, {
         state: { organization: selectedOrg },
       });
     }
   };
+  
 
   const filteredOrganizations = organizations?.filter((org) =>
     org.title.toLowerCase().includes(search.toLowerCase())
@@ -189,45 +204,48 @@ const Organizations = () => {
       </PageTransition>
 
       <AnimatePresence>
-        {modal && selectedOrg && (
-          <Modal title={`Join ${selectedOrg.title}?`} toggleModal={toggleModal}>
-            <div className="flex flex-col gap-6">
-              {selectedOrg.type === "private" ? (
-                <>
-                  <p className="text-sub">
-                    This Organization is private and requires a passkey to join.
-                  </p>
-                  <Input
-                    id="passkey"
-                    type="password"
-                    placeholder="Enter passkey"
-                    bg_color="bg-secondary"
-                    value={passkey}
-                    handleChange={(e) => setPasskey(e.target.value)}
-                  />
-                  <button
-                    className="btn-primary h-10 w-1/2 rounded-lg"
-                    onClick={handleOpen}
-                  >
-                    Verify
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-sub">
-                    Are you sure you want to view this public organization?
-                  </p>
-                  <button
-                    className="btn-primary h-10 w-1/2 rounded-lg"
-                    onClick={handleOpen}
-                  >
-                    Proceed
-                  </button>
-                </>
-              )}
-            </div>
-          </Modal>
-        )}
+      {modal && selectedOrg && (
+  <Modal title={`Join ${selectedOrg.title}?`} toggleModal={toggleModal}>
+    <div className="flex flex-col gap-6">
+      {selectedOrg.type === "private" && selectedOrg.creatorId !== user?.$id ? (
+        <>
+          <p className="text-sub">
+            This Organization is private and requires a passkey to join.
+          </p>
+          <Input
+            id="passkey"
+            type="password"
+            placeholder="Enter passkey"
+            bg_color="bg-secondary"
+            value={passkey}
+            handleChange={(e) => setPasskey(e.target.value)}
+          />
+          <button
+            className="btn-primary h-10 w-1/2 rounded-lg"
+            onClick={handleOpen}
+          >
+            Verify
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-sub">
+            {selectedOrg.type === "private"
+              ? "You're the owner of this organization, no passkey required."
+              : "Are you sure you want to view this public organization?"}
+          </p>
+          <button
+            className="btn-primary h-10 w-1/2 rounded-lg"
+            onClick={handleOpen}
+          >
+            Proceed
+          </button>
+        </>
+      )}
+    </div>
+  </Modal>
+)}
+
       </AnimatePresence>
 
       <AnimatePresence>
