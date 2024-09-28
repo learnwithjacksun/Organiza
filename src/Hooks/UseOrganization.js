@@ -47,6 +47,9 @@ const useOrganization = (organizationId) => {
             console.log("Fetch Organizations:", error);
             throw new Error(error.message)
         }
+        finally {
+            setLoading(false)
+        }
     }
 
     const deleteOrganization = async (id) => {
@@ -118,6 +121,9 @@ const useOrganization = (organizationId) => {
         } catch (error) {
             console.log("Fetch Projects:", error);
             throw new Error(error.message)
+        }
+        finally {
+            setLoading(false)
         }
     }, [organizationId])
 

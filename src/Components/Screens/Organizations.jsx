@@ -143,7 +143,7 @@ const Organizations = () => {
               </button>
             </div>
 
-            {filteredOrganizations?.length === 0 && <NoData message="" />}
+            {!loading && filteredOrganizations?.length === 0 && <NoData message="" />}
 
             <Grid>
               {loading && (

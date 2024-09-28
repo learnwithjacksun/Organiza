@@ -174,7 +174,7 @@ const Projects = () => {
             </div>
 
             <div className="my-4">
-              {!projects && (
+              {!loading && projects.length === 0 && (
                 <NoData message="There are no projects here yet! 🤷‍♂️" />
               )}
               <ul className="flex flex-col gap-4">
