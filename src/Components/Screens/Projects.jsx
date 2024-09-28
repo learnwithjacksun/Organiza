@@ -11,6 +11,8 @@ import NoData from "../UI/NoData";
 import toast from "react-hot-toast";
 import useAuth from "../../Hooks/useAuth";
 import useOrganization from "../../Hooks/UseOrganization";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Projects = () => {
   const location = useLocation();
@@ -20,8 +22,8 @@ const Projects = () => {
   const [showForm, setShowForm] = useState(false);
   const [projectName, setProjectName] = useState("");
   const { data } = useAuth();
-  const [isMember, setIsMember] = useState(false)
-  const [copy, setCopy] = useState(false)
+  const [isMember, setIsMember] = useState(false);
+  const [copy, setCopy] = useState(false);
   const {
     projects,
     createProjects,
@@ -30,41 +32,44 @@ const Projects = () => {
     finishProject,
     addMembers,
     members,
+    loading,
   } = useOrganization(organizationId);
 
   const copyPassKey = () => {
     if (organization?.passKey) {
-      navigator.clipboard.writeText(organization.passKey)
+      navigator.clipboard
+        .writeText(organization.passKey)
         .then(() => {
           toast.success("Passkey copied to clipboard!");
-          setCopy(true)
+          setCopy(true);
           setTimeout(() => {
-            setCopy(false)
-          }, 2000)
+            setCopy(false);
+          }, 2000);
         })
         .catch((err) => {
           toast.error(`Failed to copy passkey: ${err}`);
-        })
+        });
     } else {
       toast.error("No passkey available to copy!");
     }
   };
-  
+
   useEffect(() => {
     const checkMembership = () => {
-      const memberExists = members?.some(member => member.name === data?.name);
-      
+      const memberExists = members?.some(
+        (member) => member.name === data?.name
+      );
+
       if (memberExists) {
         setIsMember(true);
       } else {
         setIsMember(false);
       }
     };
-    
+
     checkMembership();
-  
   }, [data?.name, members]);
-  
+
   console.log(members?.length);
 
   const handleForm = (e) => {
@@ -117,14 +122,12 @@ const Projects = () => {
 
   const openForm = () => {
     if (isMember) {
-      setShowForm(true)
+      setShowForm(true);
+    } else {
+      toast.error("You have to become a memeber first!");
     }
-    else {
-      toast.error("You have to become a memeber first!")
-    }
-  }
+  };
 
-  
   return (
     <>
       <RootLayout>
@@ -142,17 +145,25 @@ const Projects = () => {
                 <span>Become member</span>
                 <Icon styles={"text-[1.3em]"}>person_add</Icon>
               </button>
-              {organization.type === "private" &&
-                (<button onClick={copyPassKey} className="text-sm flex items-center gap-1">
-                <span>{copy? "copied":"Copy Passkey"}</span>
-                <Icon styles={"text-[1.3em]"}>{copy? "check":"content_copy"}</Icon>
-              </button>)}
+              {organization.type === "private" && (
+                <button
+                  onClick={copyPassKey}
+                  className="text-sm flex items-center gap-1"
+                >
+                  <span>{copy ? "copied" : "Copy Passkey"}</span>
+                  <Icon styles={"text-[1.3em]"}>
+                    {copy ? "check" : "content_copy"}
+                  </Icon>
+                </button>
+              )}
             </div>
           </div>
 
           <div className="my-6">
             <div className="line py-4 flex items-center justify-between">
-              <h2 className="font-medium font-sora">Projects: { projects?.length}</h2>
+              <h2 className="font-medium font-sora">
+                Projects: {projects?.length}
+              </h2>
               <button
                 onClick={openForm}
                 className="btn-primary h-9 px-4 rounded-lg border-b-4 border-[rgba(0,0,0,0.09)]"
@@ -163,10 +174,26 @@ const Projects = () => {
             </div>
 
             <div className="my-4">
-              {projects?.length === 0 && (
+              {!projects && (
                 <NoData message="There are no projects here yet! 🤷‍♂️" />
               )}
               <ul className="flex flex-col gap-4">
+                {loading && (
+                  <>
+                    {Array(3)
+                      .fill()
+                      .map((_, index) => (
+                        <Skeleton
+                          key={index}
+                          style={{
+                            minHeight: "90px",
+                            borderRadius: "4px",
+                          }}
+                        />
+                      ))}
+                  </>
+                )}
+
                 {projects.map((project) => {
                   const { $id, projectId, title, status, $updatedAt } = project;
 
@@ -255,9 +282,7 @@ const Projects = () => {
             toggleModal={() => setShowMembers((prev) => !prev)}
           >
             <div className="my-4">
-              {members?.length === 0 && (
-                <p>No members yet!</p>
-              )}
+              {members?.length === 0 && <p>No members yet!</p>}
               <ul className="flex flex-col gap-2">
                 {members.map((member) => (
                   <li

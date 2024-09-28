@@ -8,6 +8,7 @@ const useOrganization = (organizationId) => {
     const [projects, setProjects] = useState([])
     const [members, setMember] = useState([])
     const [organizations, setOrganizations] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     const createOrganization = async (title, type, passkey, description) => {
         try {
@@ -33,6 +34,7 @@ const useOrganization = (organizationId) => {
     }
 
     const fetchOrganizations = async () => {
+        setLoading(true)
         try {
             const res = await databases.listDocuments(
                 "organizadb",
@@ -40,6 +42,7 @@ const useOrganization = (organizationId) => {
             )
             setOrganizations(res.documents.reverse())
             console.log(res.documents);
+            setLoading(false)
         } catch (error) {
             console.log("Fetch Organizations:", error);
             throw new Error(error.message)
@@ -105,11 +108,13 @@ const useOrganization = (organizationId) => {
 
 
     const fetchProjects = useCallback(async () => {
+        setLoading(true)
         try {
             const allProjects = await databases.listDocuments("organizadb", "projects")
             const projects = allProjects.documents.filter(project => project.projectId === organizationId)
             setProjects(projects.reverse())
             console.log(projects);
+            setLoading(false)
         } catch (error) {
             console.log("Fetch Projects:", error);
             throw new Error(error.message)
@@ -185,7 +190,7 @@ const useOrganization = (organizationId) => {
         }
     }
 
-    return { createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, addMembers, members }
+    return {loading, createOrganization, organizations, deleteOrganization, createProjects, projects, deleteProject, startProject, finishProject, addMembers, members }
 }
 
 export default useOrganization
